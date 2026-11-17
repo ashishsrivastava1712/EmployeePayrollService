@@ -1,14 +1,16 @@
 
 /*
  * File: EmployeePayrollControllerTest.java
- * Description: JUnit tests for Employee Payroll REST endpoints
- *              using DTO and Model classes.
+ * Description: JUnit tests for Employee Payroll Controller
+ *              with Service Layer integration.
  *
  * Name: Ashish Srivastava
  * Date: 16/11/2026
  */
 
 package com.bridgelabz.employeepayrollapp.controller;
+
+import com.bridgelabz.employeepayrollapp.service.EmployeePayrollService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,11 +26,13 @@ class EmployeePayrollControllerTest {
 
     private MockMvc mockMvc;
 
-    // Initialize controller before every test.
+    // Initialize Controller with its Service dependency.
     @BeforeEach
     void setUp() {
+        EmployeePayrollService service = new EmployeePayrollService();
+
         EmployeePayrollController controller =
-                new EmployeePayrollController();
+                new EmployeePayrollController(service);
 
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
@@ -51,7 +55,7 @@ class EmployeePayrollControllerTest {
                 .andExpect(jsonPath("$.salary").value(2000));
     }
 
-    // Test POST using EmployeePayrollDTO.
+    // Test POST employee request.
     @Test
     void testCreateEmployee() throws Exception {
         String employeeJson = """
@@ -69,7 +73,7 @@ class EmployeePayrollControllerTest {
                 .andExpect(jsonPath("$.salary").value(2000));
     }
 
-    // Test PUT using EmployeePayrollDTO.
+    // Test PUT employee request.
     @Test
     void testUpdateEmployee() throws Exception {
         String employeeJson = """
@@ -87,7 +91,7 @@ class EmployeePayrollControllerTest {
                 .andExpect(jsonPath("$.salary").value(2500));
     }
 
-    // Test DELETE employee endpoint.
+    // Test DELETE employee request.
     @Test
     void testDeleteEmployee() throws Exception {
         mockMvc.perform(delete("/employeepayrollservice/delete/1"))
