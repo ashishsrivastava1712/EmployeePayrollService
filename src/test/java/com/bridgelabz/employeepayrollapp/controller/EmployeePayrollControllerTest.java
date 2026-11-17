@@ -1,8 +1,8 @@
 
 /*
  * File: EmployeePayrollControllerTest.java
- * Description: JUnit 5 test class for verifying all Employee Payroll
- *              REST Controller endpoints using standalone MockMvc.
+ * Description: JUnit tests for Employee Payroll REST endpoints
+ *              using DTO and Model classes.
  *
  * Name: Ashish Srivastava
  * Date: 16/11/2026
@@ -12,6 +12,7 @@ package com.bridgelabz.employeepayrollapp.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,38 +24,36 @@ class EmployeePayrollControllerTest {
 
     private MockMvc mockMvc;
 
-    // Initialize the controller before every test.
+    // Initialize controller before every test.
     @BeforeEach
     void setUp() {
-        EmployeePayrollController controller = new EmployeePayrollController();
+        EmployeePayrollController controller =
+                new EmployeePayrollController();
+
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
-    // Test GET request to check the service.
+    // Test service availability endpoint.
     @Test
     void testGetAllEmployees() throws Exception {
-
         mockMvc.perform(get("/employeepayrollservice/"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message")
                         .value("Employee Payroll Service is running"));
     }
 
-    // Test GET request using employee ID.
+    // Test GET employee by ID.
     @Test
     void testGetEmployeeById() throws Exception {
-
         mockMvc.perform(get("/employeepayrollservice/get/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.message")
-                        .value("Employee ID received successfully"));
+                .andExpect(jsonPath("$.name").value("Lisa"))
+                .andExpect(jsonPath("$.salary").value(2000));
     }
 
-    // Test POST request with employee JSON data.
+    // Test POST using EmployeePayrollDTO.
     @Test
     void testCreateEmployee() throws Exception {
-
         String employeeJson = """
                 {
                     "name": "Lisa",
@@ -66,14 +65,13 @@ class EmployeePayrollControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(employeeJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.employee.name").value("Lisa"))
-                .andExpect(jsonPath("$.employee.salary").value(2000));
+                .andExpect(jsonPath("$.name").value("Lisa"))
+                .andExpect(jsonPath("$.salary").value(2000));
     }
 
-    // Test PUT request with updated employee JSON data.
+    // Test PUT using EmployeePayrollDTO.
     @Test
     void testUpdateEmployee() throws Exception {
-
         String employeeJson = """
                 {
                     "name": "Lisa",
@@ -85,14 +83,13 @@ class EmployeePayrollControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(employeeJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.employee.name").value("Lisa"))
-                .andExpect(jsonPath("$.employee.salary").value(2500));
+                .andExpect(jsonPath("$.name").value("Lisa"))
+                .andExpect(jsonPath("$.salary").value(2500));
     }
 
-    // Test DELETE request using employee ID.
+    // Test DELETE employee endpoint.
     @Test
     void testDeleteEmployee() throws Exception {
-
         mockMvc.perform(delete("/employeepayrollservice/delete/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
